@@ -10,6 +10,9 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Read a pair of images
+%% For 12, 14 and 14 bit images, they should be converted to 8 bit images
+%% befor optical flow computation
+
 Im1=imread('White_oval_1.tif');
 Im2=imread('White_Oval_2.tif');
 
@@ -23,7 +26,6 @@ Im2=imread('White_Oval_2.tif');
 
 % Im1=imread('wall_jet_1.tif');
 % Im2=imread('wall_jet_2.tif');
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -48,14 +50,14 @@ scale_im=0.5;
 %% For Image Pre-Processing
 
 %% For local illumination intensity adjustment, To bypass it, set size_average = 0
-size_average=0; % in pixels
+size_average=20; % in pixels
 
 %% Gausian filter size for removing random noise in images
 size_filter=4; % in pixels
 
 %% Selete a region for processing (index_region = 1) otherwise processing for the
 %% whole image (index_region = 0)
-index_region=0;
+index_region=1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -121,9 +123,12 @@ k=1;
 while k<=no_iteration
     [Im1_shift,uxI,uyI]=shift_image_fun_refine_1(ux_corr,uy_corr,Im1,Im2);
     
-    I1=double(Im1);
+    I1=double(Im1_shift);
     I2=double(Im2);
-      
+    
+    size_filter_1=2;
+    [I1,I2] = pre_processing_a(I1,I2,1,size_filter_1);
+    
     % calculation of correction of the optical flow 
     [dux,duy,vor,dux_horn,duy_horn,error2]=OpticalFlowPhysics_fun(I1,I2,lambda_1,lambda_2);
 
