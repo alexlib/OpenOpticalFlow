@@ -93,8 +93,8 @@ def plots_set_1(I_region1, I_region2, ux0, uy0, Im1, Im2, ux, uy):
 if __name__ == "__main__":
     # Load and downsample vortex pair images
     from skimage import io, transform
-    Im2 = io.imread('vortex_pair_particles_1.tif')
-    Im1 = io.imread('vortex_pair_particles_2.tif')
+    Im2 = io.imread('img/vortex_pair_particles_1.tif')
+    Im1 = io.imread('img/vortex_pair_particles_2.tif')
     I_region1 = transform.downscale_local_mean(Im1, (4, 4))
     I_region2 = transform.downscale_local_mean(Im2, (4, 4))
 
