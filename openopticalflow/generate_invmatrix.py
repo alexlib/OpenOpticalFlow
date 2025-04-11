@@ -4,7 +4,7 @@ from scipy import ndimage
 def generate_invmatrix(i, alpha, h):
     """
     Generate inverse matrix for Liu-Shen optical flow estimation
-    
+
     Parameters:
         i: Input image
         alpha: Regularization parameter
@@ -26,8 +26,33 @@ def generate_invmatrix(i, alpha, h):
     # Calculate determinant and inverse components
     det_a = a11*a22 - a12*a12
 
-    b11 = a22/det_a
-    b12 = -a12/det_a
-    b22 = a11/det_a
+    # Add a small epsilon to avoid division by zero
+    epsilon = 1e-10
+
+    # Create a mask for valid determinant values
+    valid_mask = np.abs(det_a) > epsilon
+
+    # Initialize inverse matrix components with zeros
+    b11 = np.zeros_like(det_a)
+    b12 = np.zeros_like(det_a)
+    b22 = np.zeros_like(det_a)
+
+    # Calculate inverse only where determinant is valid
+    b11[valid_mask] = a22[valid_mask] / det_a[valid_mask]
+    b12[valid_mask] = -a12[valid_mask] / det_a[valid_mask]
+    b22[valid_mask] = a11[valid_mask] / det_a[valid_mask]
+
+    # For invalid determinants, use regularized values
+    # This is a simple regularization that preserves the matrix structure
+    invalid_mask = ~valid_mask
+    if np.any(invalid_mask):
+        # Use identity matrix scaled by the average of valid diagonal elements
+        if np.any(valid_mask):
+            scale = 0.5 * (np.mean(np.abs(b11[valid_mask])) + np.mean(np.abs(b22[valid_mask])))
+        else:
+            scale = 1.0
+        b11[invalid_mask] = scale
+        b22[invalid_mask] = scale
+        b12[invalid_mask] = 0.0
 
     return b11, b12, b22

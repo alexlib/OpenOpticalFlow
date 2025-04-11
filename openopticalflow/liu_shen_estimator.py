@@ -54,8 +54,13 @@ def liu_shen_estimator(i0, i1, f, dx, dt, lambda_param, tol, maxnum, u0, v0):
               ii * ndimage.convolve(v, f_kernel.T/(dx*dx), mode='reflect') +
               lambda_param * ndimage.convolve(v, h/(dx*dx), mode='reflect') + iyt)
 
+        # Calculate new flow values
         unew = -(b11*bu + b12*bv)
         vnew = -(b12*bu + b22*bv)
+
+        # Replace any NaN or Inf values with the previous iteration's values
+        unew = np.where(np.isfinite(unew), unew, u)
+        vnew = np.where(np.isfinite(vnew), vnew, v)
 
         total_error = (np.linalg.norm(unew-u, 'fro') +
                       np.linalg.norm(vnew-v, 'fro'))/(r*c)
