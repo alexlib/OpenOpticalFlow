@@ -1,8 +1,0 @@
-numpy
-scipy
-matplotlib
-scikit-image
-
-[dev]
-pytest>=7.0.0
-pytest-cov
