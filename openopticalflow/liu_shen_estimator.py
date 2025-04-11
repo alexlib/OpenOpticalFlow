@@ -1,11 +1,11 @@
 import numpy as np
 from scipy import ndimage
-from generate_invmatrix import generate_invmatrix
+from openopticalflow.generate_invmatrix import generate_invmatrix
 
 def liu_shen_estimator(i0, i1, f, dx, dt, lambda_param, tol, maxnum, u0, v0):
     """
     Liu-Shen optical flow estimator
-    
+
     Parameters:
         i0, i1: Input images
         f: Physical transport term
@@ -40,26 +40,26 @@ def liu_shen_estimator(i0, i1, f, dx, dt, lambda_param, tol, maxnum, u0, v0):
     error = []
 
     while total_error > tol and k < maxnum:
-        bu = (2*iix * ndimage.convolve(u, d/dx, mode='reflect') + 
+        bu = (2*iix * ndimage.convolve(u, d/dx, mode='reflect') +
               iix * ndimage.convolve(v, d.T/dx, mode='reflect') +
-              iiy * ndimage.convolve(v, d/dx, mode='reflect') + 
+              iiy * ndimage.convolve(v, d/dx, mode='reflect') +
               ii * ndimage.convolve(u, f_kernel/(dx*dx), mode='reflect') +
-              ii * ndimage.convolve(v, m/(dx*dx), mode='reflect') + 
+              ii * ndimage.convolve(v, m/(dx*dx), mode='reflect') +
               lambda_param * ndimage.convolve(u, h/(dx*dx), mode='reflect') + ixt)
-        
+
         bv = (iiy * ndimage.convolve(u, d/dx, mode='reflect') +
               iix * ndimage.convolve(u, d.T/dx, mode='reflect') +
               2*iiy * ndimage.convolve(v, d.T/dx, mode='reflect') +
               ii * ndimage.convolve(u, m/(dx*dx), mode='reflect') +
               ii * ndimage.convolve(v, f_kernel.T/(dx*dx), mode='reflect') +
               lambda_param * ndimage.convolve(v, h/(dx*dx), mode='reflect') + iyt)
-        
+
         unew = -(b11*bu + b12*bv)
         vnew = -(b12*bu + b22*bv)
-        
-        total_error = (np.linalg.norm(unew-u, 'fro') + 
+
+        total_error = (np.linalg.norm(unew-u, 'fro') +
                       np.linalg.norm(vnew-v, 'fro'))/(r*c)
-        
+
         u = unew
         v = vnew
         error.append(total_error)
