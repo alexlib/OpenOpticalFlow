@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 from vis_flow import vis_flow
 
 def plots_set_1(I_region1, I_region2, ux0, uy0, Im1, Im2, ux, uy):
